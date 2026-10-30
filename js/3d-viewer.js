@@ -5,7 +5,7 @@
 (() => {
   const THREE_BASE = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128";
   const HUMAN_MODEL = "https://raw.githubusercontent.com/Charleeh/ecorche/main/model/ecorche.glb";
-  const HEART_MODEL = "https://raw.githubusercontent.com/organui/heart-3d/main/public/models/heart.glb";
+  const HEART_MODEL = "https://cdn.jsdelivr.net/gh/organui/heart-3d@c72ce6654ff8e282942f97750d3104f55ef4fc3d/public/models/heart.glb";
   const palettes = { human:0x55e4e8, animals:0xffb45c, fish:0x57a8ff, dinosaurs:0xa9e76b, dragons:0xc28aff, micro:0xf47bbd };
   let loadPromise;
 
@@ -59,7 +59,7 @@
   const prettyName = (mesh) => (mesh.userData.name || mesh.userData.displayName || mesh.name || "Anatomical structure")
     .replace(/[_\.]+/g," ").replace(/\b([lr])\b/gi,m=>m.toUpperCase()).replace(/\s+/g," ").trim();
   const layerOf = (mesh) => {
-    const n=(mesh.name+" "+(mesh.parent?.name||"")).toLowerCase();
+    const n=(mesh.userData.layer||"")+" "+(mesh.userData.tissue||"")+" "+(mesh.userData.name||"")+" "+mesh.name+" "+(mesh.parent?.name||"");
     if(/muscle|muscular|fascia|tendon/.test(n)) return "muscles";
     if(/bone|skelet|cartilage|tooth|teeth|vertebra|rib|skull|mandible|maxilla/.test(n)) return "skeleton";
     return "other";
@@ -146,8 +146,28 @@
   }
 
   function attach() {
-    const detail=document.getElementById("detailContent");if(!detail||detail.dataset.lv3dObserver)return;detail.dataset.lv3dObserver="1";addStyles();
-    new MutationObserver(()=>{const title=detail.querySelector("#detailTitle");if(!title)return;const old=detail.querySelector(".lv3d-host");if(old&&old.dataset.forTitle===title.textContent.trim())return;if(old)old.remove();const hero=detail.querySelector(".detail-hero");const text=(title.textContent+" "+(hero?.textContent||"")).toLowerCase();const kind=/fish|ocean|shark|aqua/.test(text)?"fish":/dinosaur|prehistoric|tyrannosaurus|stegosaurus|triceratops/.test(text)?"dinosaurs":/dragon|fantasy/.test(text)?"dragons":/cell|micro|virus|bacteria|microscopic/.test(text)?"micro":/animal|lion|mammal|wildlife/.test(text)?"animals":"human";const host=document.createElement("div");host.className="lv3d-host";host.dataset.forTitle=title.textContent.trim();(detail.querySelector(".detail-body")||detail).prepend(host);if(kind==="human")makeHumanViewer(host,title.textContent.trim());else mountStylizedViewer(host,kind,title.textContent.trim());}).observe(detail,{childList:true,subtree:true});
+    const detail=document.getElementById("detailContent");
+    if(!detail||detail.dataset.lv3dObserver)return;
+    detail.dataset.lv3dObserver="1";addStyles();
+    let lastTitle="";
+    const mount=()=>{
+      const title=detail.querySelector("#detailTitle");
+      if(!title)return;
+      const titleText=title.textContent.trim();
+      if(lastTitle===titleText && detail.querySelector(".lv3d-host"))return;
+      lastTitle=titleText;
+      const old=detail.querySelector(".lv3d-host");if(old)old.remove();
+      const hero=detail.querySelector(".detail-hero");
+      const text=(titleText+" "+(hero?.textContent||"")).toLowerCase();
+      const kind=/fish|ocean|shark|aqua/.test(text)?"fish":/dinosaur|prehistoric|tyrannosaurus|stegosaurus|triceratops/.test(text)?"dinosaurs":/dragon|fantasy/.test(text)?"dragons":/cell|micro|virus|bacteria|microscopic/.test(text)?"micro":/animal|lion|mammal|wildlife/.test(text)?"animals":"human";
+      const host=document.createElement("div");host.className="lv3d-host";host.dataset.forTitle=titleText;
+      (detail.querySelector(".detail-body")||detail).prepend(host);
+      if(kind==="human")makeHumanViewer(host,titleText);else mountStylizedViewer(host,kind,titleText);
+    };
+    new MutationObserver(()=>requestAnimationFrame(()=>requestAnimationFrame(mount))).observe(detail,{childList:true,subtree:true});
+    // Also catch modal-open/layout changes, so the canvas is sized after it becomes visible.
+    const modal=document.getElementById("detailModal");
+    if(modal)new MutationObserver(()=>{if(detail.querySelector("#detailTitle"))requestAnimationFrame(()=>window.dispatchEvent(new Event("resize")));}).observe(modal,{attributes:true,attributeFilter:["class","aria-hidden","style"]});
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",attach);else attach();
 })();
