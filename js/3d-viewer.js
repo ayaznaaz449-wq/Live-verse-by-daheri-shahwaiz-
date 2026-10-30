@@ -55,7 +55,7 @@
     return loadPromise;
   }
 
-  const prettyName = (mesh) => (mesh.userData.displayName || mesh.name || "Anatomical structure")
+  const prettyName = (mesh) => (mesh.userData.name || mesh.userData.displayName || mesh.name || "Anatomical structure")
     .replace(/[_\.]+/g," ").replace(/\b([lr])\b/gi,m=>m.toUpperCase()).replace(/\s+/g," ").trim();
   const layerOf = (mesh) => {
     const n=(mesh.name+" "+(mesh.parent?.name||"")).toLowerCase();
