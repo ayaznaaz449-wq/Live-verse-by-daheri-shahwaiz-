@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <meta name="description" content="LIFEVERSE 3D — explore human anatomy, diseases, animals, fish, dinosaurs and fantasy creatures.">
+  <title>LIFEVERSE 3D — Explore Life</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="LIFEVERSE 3D home"><span class="brand-mark">✦</span><span>LIFE<span class="accent">VERSE</span><small>3D EXPLORER</small></span></a>
+    <nav class="nav"><a href="#explore">Explore</a><a href="#diseases">Diseases</a><a href="#compare">Compare</a><a href="#quiz">Quiz</a></nav>
+    <button class="button button-ghost" id="adminOpen">Admin Dashboard ↗</button>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="pulse"></span> INTERACTIVE SCIENCE UNIVERSE</div>
+        <h1>Explore <span class="gradient-text">Life.</span><br>Discover the <span class="gradient-text">Unknown.</span></h1>
+        <p class="hero-text">Journey through human anatomy, animal kingdoms, ocean life, prehistoric giants and fantasy creatures — all in one interactive explorer.</p>
+        <div class="hero-actions"><a class="button button-primary" href="#explore">Start Exploring <span>↗</span></a><a class="button button-ghost" href="#diseases">Explore diseases</a></div>
+        <div class="hero-stats"><div><b>06</b><span>Worlds to explore</span></div><div><b>3D</b><span>Interactive learning</span></div><div><b>FREE</b><span>Starter project</span></div></div>
+      </div>
+      <div class="hero-art">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <div class="hero-glow"></div>
+        <div class="hero-creature">🧬</div>
+        <div class="floating-card card-organ"><span class="mini-icon">♡</span><div><b>Human Anatomy</b><small>Explore body systems</small></div></div>
+        <div class="floating-card card-ocean"><span class="mini-icon">≈</span><div><b>Ocean Life</b><small>Discover species</small></div></div>
+        <div class="floating-card card-dino"><span class="mini-icon">◈</span><div><b>Prehistoric World</b><small>Meet ancient giants</small></div></div>
+        <div class="scanline"></div>
+      </div>
+    </section>
+
+    <section class="section" id="explore">
+      <div class="section-head"><div><div class="eyebrow">CHOOSE YOUR WORLD</div><h2>One universe. <span class="gradient-text">Endless discovery.</span></h2></div><p>Choose a category to explore facts, anatomy and available models.</p></div>
+      <div class="world-grid" id="worldGrid"></div>
+    </section>
+
+    <section class="section disease-section" id="diseases">
+      <div class="section-head"><div><div class="eyebrow">UNDERSTAND THE HUMAN BODY</div><h2>Inside the <span class="gradient-text">science of health.</span></h2></div><p>Learn what conditions are, common causes and risk factors, symptoms and prevention.</p></div>
+      <div class="disease-tools"><input id="diseaseSearch" type="search" placeholder="Search a disease or organ…"><select id="diseaseFilter" aria-label="Filter diseases"><option value="all">All topics</option><option value="infection">Infections</option><option value="lifestyle">Metabolic & cardiovascular</option><option value="respiratory">Respiratory</option></select></div>
+      <div class="disease-grid" id="diseaseGrid"></div>
+      <p class="medical-note">Educational information only — not a diagnosis. Causes and risk factors vary by person. Seek qualified medical care for personal symptoms or treatment decisions.</p>
+    </section>
+
+    <section class="section compare-section" id="compare">
+      <div class="section-head"><div><div class="eyebrow">LEARN BY COMPARING</div><h2>Different creatures. <span class="gradient-text">Different designs.</span></h2></div><p>Compare selected biology facts between species.</p></div>
+      <div class="compare-panel">
+        <div class="compare-select"><label for="creatureA">Creature A</label><select id="creatureA"></select><div class="compare-creature" id="compareA">🧍</div><h3 id="nameA">Human</h3></div>
+        <div class="versus">VS</div>
+        <div class="compare-select"><label for="creatureB">Creature B</label><select id="creatureB"></select><div class="compare-creature" id="compareB">🦁</div><h3 id="nameB">Lion</h3></div>
+        <div class="compare-results" id="compareResults"></div>
+      </div>
+    </section>
+
+    <section class="section quiz-section" id="quiz">
+      <div class="quiz-card">
+        <div><div class="eyebrow">TEST YOUR KNOWLEDGE</div><h2>Ready for a <span class="gradient-text">science challenge?</span></h2><p>Try a quick quiz and see what you know about the living world.</p></div>
+        <div class="quiz-box"><div class="quiz-top"><span>QUICK QUIZ</span><span id="quizCount">QUESTION 1 / 5</span></div><h3 id="quizQuestion"></h3><div id="quizAnswers" class="quiz-answers"></div><div id="quizFeedback" aria-live="polite"></div><button class="button button-primary" id="nextQuestion" disabled>Next question →</button></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer"><div class="brand"><span class="brand-mark">✦</span><span>LIFE<span class="accent">VERSE</span><small>3D EXPLORER</small></span></div><p>Explore life with curiosity. Learn with evidence.</p><div class="credit">Developed and Designed by <strong>Daheri Shahwaiz</strong></div></footer>
+
+  <div class="modal-backdrop" id="detailModal" aria-hidden="true"><div class="modal detail-modal" role="dialog" aria-modal="true" aria-labelledby="detailTitle"><button class="modal-close" data-close="detailModal" aria-label="Close">×</button><div id="detailContent"></div></div></div>
+  <div class="modal-backdrop" id="adminModal" aria-hidden="true"><div class="modal admin-modal" role="dialog" aria-modal="true" aria-labelledby="adminTitle"><button class="modal-close" data-close="adminModal" aria-label="Close">×</button><div id="adminContent"></div></div></div>
+  <div class="toast" id="toast" role="status"></div>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <!-- LifeVerse app -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
