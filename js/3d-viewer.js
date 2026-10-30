@@ -81,7 +81,7 @@
           </aside>
         </div>
         <div class="lv3d-toolbar"><button data-view="front">Front view</button><button data-view="back">Back view</button><button data-view="side">Side view</button><button data-rotate>⟳ Auto rotate</button><button data-reset>Reset</button></div>
-        <p class="lv3d-note">Model: Écorché — 634 separately named bone and muscle structures, CC BY-SA 4.0. <a href="https://github.com/Charleeh/ecorche" target="_blank" rel="noopener">Model source & attribution</a>. Educational visualization only; not for diagnosis. Skin and internal organs are not part of this model yet.</p>
+        <p class="lv3d-note">${isHeart ? "Heart model: BodyParts3D, © The Database Center for Life Science, CC BY 4.0. <a href=\"https://github.com/organui/heart-3d\" target=\"_blank\" rel=\"noopener\">Source & attribution</a>." : "Model: Écorché — separately named bone and muscle structures, CC BY-SA 4.0. <a href=\"https://github.com/Charleeh/ecorche\" target=\"_blank\" rel=\"noopener\">Source & attribution</a>. Skin and internal organs are not part of this model yet."} Educational visualization only; not for diagnosis.</p>
       </section>`;
     const stage=host.querySelector(".lv3d-stage"),canvas=host.querySelector("canvas"),loading=host.querySelector(".lv3d-load"),status=host.querySelector("[data-status]");
     const list=host.querySelector(".lv3d-parts"),search=host.querySelector(".lv3d-search"),partName=host.querySelector("[data-part-name]"),partDesc=host.querySelector("[data-part-desc]");
