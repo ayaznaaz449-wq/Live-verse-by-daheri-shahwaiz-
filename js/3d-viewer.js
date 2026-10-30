@@ -5,6 +5,7 @@
 (() => {
   const THREE_BASE = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128";
   const HUMAN_MODEL = "https://raw.githubusercontent.com/Charleeh/ecorche/main/model/ecorche.glb";
+  const HEART_MODEL = "https://cdn.jsdelivr.net/gh/organui/heart-3d@c72ce6654ff8e282942f97750d3104f55ef4fc3d/public/models/heart.glb";
   const palettes = { human:0x55e4e8, animals:0xffb45c, fish:0x57a8ff, dinosaurs:0xa9e76b, dragons:0xc28aff, micro:0xf47bbd };
   let loadPromise;
 
@@ -65,6 +66,8 @@
   };
 
   function makeHumanViewer(host,title) {
+    const isHeart = /heart|cardiac|dil/i.test(title);
+    const modelUrl = isHeart ? HEART_MODEL : HUMAN_MODEL;
     host.innerHTML = `
       <section class="lv3d-panel" aria-label="Realistic interactive human anatomy explorer">
         <div class="lv3d-heading"><span class="lv3d-title">✦ HUMAN ANATOMY LAB <span style="color:#7896ab;font-weight:400">/ ${title}</span></span><span class="lv3d-status" data-status>PREPARING 3D MODEL</span></div>
@@ -116,8 +119,8 @@
       canvas.addEventListener("wheel",e=>{e.preventDefault();zoom=Math.max(initialZoom*.45,Math.min(initialZoom*2.2,zoom+e.deltaY*.006));updateCamera();},{passive:false});
       canvas.addEventListener("click",e=>{const r=canvas.getBoundingClientRect();pointer.x=((e.clientX-r.left)/r.width)*2-1;pointer.y=-((e.clientY-r.top)/r.height)*2+1;raycaster.setFromCamera(pointer,camera);const hit=raycaster.intersectObjects(meshes.filter(m=>m.visible),true)[0];if(hit){let m=hit.object;while(m&&!meshes.includes(m))m=m.parent;if(m){selectMesh(m);renderList();}}});
       const loader=new T.GLTFLoader();
-      status.textContent="DOWNLOADING ANATOMY";
-      loader.load(HUMAN_MODEL,gltf=>{
+      status.textContent=isHeart?"DOWNLOADING HEART MODEL":"DOWNLOADING ANATOMY";
+      loader.load(modelUrl,gltf=>{
         model=gltf.scene;scene.add(model);
         const box=new T.Box3().setFromObject(model),size=box.getSize(new T.Vector3()),center=box.getCenter(new T.Vector3());
         model.position.sub(center);
