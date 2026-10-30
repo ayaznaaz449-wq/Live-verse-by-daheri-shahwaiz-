@@ -5,7 +5,7 @@
 (() => {
   const THREE_BASE = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128";
   const HUMAN_MODEL = "https://raw.githubusercontent.com/Charleeh/ecorche/main/model/ecorche.glb";
-  const HEART_MODEL = "https://cdn.jsdelivr.net/gh/organui/heart-3d@c72ce6654ff8e282942f97750d3104f55ef4fc3d/public/models/heart.glb";
+  const HEART_MODEL = "https://raw.githubusercontent.com/organui/heart-3d/main/public/models/heart.glb";
   const palettes = { human:0x55e4e8, animals:0xffb45c, fish:0x57a8ff, dinosaurs:0xa9e76b, dragons:0xc28aff, micro:0xf47bbd };
   let loadPromise;
 
@@ -124,13 +124,16 @@
         model=gltf.scene;scene.add(model);
         const box=new T.Box3().setFromObject(model),size=box.getSize(new T.Vector3()),center=box.getCenter(new T.Vector3());
         model.position.sub(center);
-        const scale=2.8/Math.max(size.x,size.y,size.z);model.scale.setScalar(scale);
+        const maxDim=Math.max(size.x,size.y,size.z);
+        if (!Number.isFinite(maxDim) || maxDim <= 0) { throw new Error("Loaded model has invalid dimensions"); }
+        const scale=(isHeart?2.2:2.8)/maxDim;
+        model.scale.setScalar(scale);
         model.traverse(o=>{if(o.isMesh){o.userData.lvOriginalMaterial=o.material;o.material=o.material.clone();o.material.side=T.DoubleSide;o.material.roughness=.72;o.material.metalness=.02;meshes.push(o);}});
         meshes.sort((a,b)=>prettyName(a).localeCompare(prettyName(b)));
-        initialZoom=4.3;zoom=initialZoom;resetCamera();loading.remove();status.textContent=meshes.length+" SELECTABLE STRUCTURES";
+        initialZoom=isHeart?3.4:4.3;zoom=initialZoom;resetCamera();loading.remove();status.textContent=meshes.length+" SELECTABLE STRUCTURES";
         applyLayers();renderList();
         if(meshes.length){const first=meshes.find(m=>layerOf(m)==="skeleton")||meshes[0];selectMesh(first);}
-      },xhr=>{if(xhr.total)status.textContent="LOADING "+Math.round(xhr.loaded/xhr.total*100)+"%";},err=>{loading.innerHTML='<strong>3D model could not load</strong><span>Check your internet connection and refresh. The model is hosted from the open-source project.</span>';status.textContent="MODEL LOAD FAILED";});
+      },xhr=>{if(xhr.total)status.textContent="LOADING "+Math.round(xhr.loaded/xhr.total*100)+"%";},err=>{console.error("LifeVerse 3D model load failed:",modelUrl,err);loading.innerHTML='<strong>3D model could not load</strong><span>Check your connection and try refresh. If the issue continues, the model host may be unavailable.</span><button type="button" class="lv3d-btn" data-retry>Retry model</button>';const retry=loading.querySelector("[data-retry]");if(retry)retry.addEventListener("click",()=>{loading.innerHTML='<div class="lv3d-spinner"></div><strong>Retrying 3D model…</strong>';status.textContent="RETRYING MODEL";loader.load(modelUrl,gltf=>{location.reload();},undefined,()=>{status.textContent="MODEL LOAD FAILED";loading.innerHTML='<strong>Still unavailable</strong><span>Please refresh later or check your internet connection.</span>';});});status.textContent="MODEL LOAD FAILED";});
       const resize=()=>{if(!stage.isConnected){cancelAnimationFrame(raf);renderer.dispose();return;}camera.aspect=Math.max(1,stage.clientWidth)/Math.max(1,stage.clientHeight);camera.updateProjectionMatrix();renderer.setSize(stage.clientWidth,stage.clientHeight,false);};
       window.addEventListener("resize",resize);
       const draw=()=>{raf=requestAnimationFrame(draw);if(autoRotate&&!dragging){rotY+=.002;updateCamera();}renderer.render(scene,camera);};draw();
